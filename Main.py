@@ -38,9 +38,12 @@ def main():
             apr_var = int(values[5])
             repetitions = int(values[6])
             state = int(values[7]) # 0=normal, 1=threads, 2=multiprocessing
-            range = int(principle * .15)
-            print("calculating")
-
+            global range_high
+            global range_low
+            set_range_high(int(principle * .08))
+            set_range_low(int(principle * .03))
+            print(range_high)
+            print("calculating") 
             #thread(with_freq, freq_var, apr, apr_var, principle, cost)
             if state == 2:
                 return with_freq, freq_var, apr, apr_var, principle, cost, repetitions, state
@@ -49,7 +52,7 @@ def main():
                 print("time: ", time.time() - start_time, "seconds")
             if state == 0:
                 winners = {}
-                determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners, range)
+                determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners)
                 print(max(winners, key=winners.get))
                 print("time: ", time.time() - start_time, "seconds")
 
@@ -101,49 +104,88 @@ def get_apr_array(apr, apr_var):
     average = average / 365
     return array
 
-def calculate(with_array, apr_array, principle, cost, range):
-    unclaimed = 0
-    with_counter = 0
-    with_index = 0
-    max_p = 0
-    best_i = 0
-    new_principle = principle
-    for i in range(cost, range):
-        for z in range(0, 364):
-            unclaimed += new_principle * (apr_array[z] / 100 / 365)
-            with_counter += 1
-            if unclaimed >= i:
-                new_principle += unclaimed - cost
-            #    print(unclaimed)
-                unclaimed = 0
-                with_counter = 0
-            if with_counter == with_array[with_index]:
-            #    print("withdrew", with_counter)
-                new_principle += unclaimed - cost
-                unclaimed = 0
-                with_counter = 0
-                with_index += 1
-        if (new_principle + unclaimed) > max_p:
-            max_p = new_principle + unclaimed
-            best_i = i
-        #print(new_principle+unclaimed)
-        new_principle = principle
+def calculate(with_array, apr_array, principle, cost):
+    x = 1
+    while x == 1:
         unclaimed = 0
         with_counter = 0
         with_index = 0
-    print(max_p)
+        max_p = 0
+        best_i = 0
+        new_principle = principle
+        for i in range(range_low, range_high):
+            for z in range(0, 364):
+                unclaimed += new_principle * (apr_array[z] / 100 / 365)
+                with_counter += 1
+                if unclaimed >= i:
+                    new_principle += unclaimed - cost
+                #    print(unclaimed)
+                    unclaimed = 0
+                    with_counter = 0
+                if with_counter == with_array[with_index]:
+                #    print("withdrew", with_counter)
+                    new_principle += unclaimed - cost
+                    unclaimed = 0
+                    with_counter = 0
+                    with_index += 1
+            if (new_principle + unclaimed) > max_p:
+                max_p = new_principle + unclaimed
+                best_i = i
+            #print(new_principle+unclaimed)
+            new_principle = principle
+            unclaimed = 0
+            with_counter = 0
+            with_index = 0
+        x = 0
+        if (best_i == range_high - 1):
+            print("range maxed, redo")
+            inc_range_high()
+            print(range_high)
+            x = 1
     return best_i
 
-def determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners, range):
+def determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners):
     for i in range(0, repetitions):
         with_array = get_with_array(with_freq, freq_var)
         apr_array = get_apr_array(apr, apr_var)
-        winner = calculate(with_array, apr_array, principle, cost, range)
+        winner = calculate(with_array, apr_array, principle, cost)
         try:
             winners[winner] = winners[winner] + 1
         except:
             winners[winner] = 1
     return winners
+
+def set_range_high(num):
+    range_high = num
+
+def set_range_low(num):
+    range_low = num
+
+def inc_range_high():
+    range_high = int(range_high * 1.01)
+
+def dec_range_low():
+    range_low = int(range_low * .99)
+
+
+with_freq, freq_var, apr, apr_var, principle, cost, repetitions, state = main()
+
+if __name__ == '__main__' and state == 2:
+    start_time = time.time()
+    winners = {}
+    print("Started")
+    mp.set_start_method("spawn")
+    process = mp.Process(target=determine, args=(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners))
+    process.start()
+    process.join()
+    print(winners)
+    print("time: ", time.time() - start_time, "seconds")
+else:
+    main()
+
+
+
+
 
 def thread(with_freq, freq_var, apr, apr_var, principle, cost, repetitions):
     winners1 = {}
@@ -277,19 +319,3 @@ def thread(with_freq, freq_var, apr, apr_var, principle, cost, repetitions):
     print("joined")
     winners_end = Counter(winners1) + Counter(winners2) + Counter(winners3) + Counter(winners4) + Counter(winners5) + Counter(winners6) + Counter(winners7) + Counter(winners8) + Counter(winners9) + Counter(winners10) + Counter(winners11) + Counter(winners12) + Counter(winners13) + Counter(winners14) + Counter(winners15) + Counter(winners16) + Counter(winners17) + Counter(winners18) + Counter(winners19) + Counter(winners20) + Counter(winners21) + Counter(winners22) + Counter(winners23) + Counter(winners24) + Counter(winners25) + Counter(winners26) + Counter(winners27) + Counter(winners28) + Counter(winners29) + Counter(winners30) + Counter(winners31) + Counter(winners32)
     print(max(winners, key=winners.get))
-
-
-with_freq, freq_var, apr, apr_var, principle, cost, repetitions, state = main()
-
-if __name__ == '__main__' and state == 2:
-    start_time = time.time()
-    winners = {}
-    print("Started")
-    mp.set_start_method("spawn")
-    process = mp.Process(target=determine, args=(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners))
-    process.start()
-    process.join()
-    print(winners)
-    print("time: ", time.time() - start_time, "seconds")
-else:
-    main()
