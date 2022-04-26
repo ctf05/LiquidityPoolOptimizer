@@ -38,6 +38,7 @@ def main():
             apr_var = int(values[5])
             repetitions = int(values[6])
             state = int(values[7]) # 0=normal, 1=threads, 2=multiprocessing
+            range = int(principle * .15)
             print("calculating")
 
             #thread(with_freq, freq_var, apr, apr_var, principle, cost)
@@ -48,7 +49,7 @@ def main():
                 print("time: ", time.time() - start_time, "seconds")
             if state == 0:
                 winners = {}
-                determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners)
+                determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners, range)
                 print(max(winners, key=winners.get))
                 print("time: ", time.time() - start_time, "seconds")
 
@@ -59,7 +60,7 @@ def main():
 
 
 def get_with_array(with_freq, freq_var):
-    number_of_with = int(365 / with_freq) + 1
+    number_of_with = int(365 / with_freq) + 2
     array = []
     for i in range(0,number_of_with):
         array.append(int(with_freq * random.randrange(int(((1 - (freq_var / 100)) * 10000)), int(((1 + (freq_var / 100))) * 10000)) / 10000))
@@ -100,18 +101,18 @@ def get_apr_array(apr, apr_var):
     average = average / 365
     return array
 
-def calculate(with_array, apr_array, principle, cost):
+def calculate(with_array, apr_array, principle, cost, range):
     unclaimed = 0
     with_counter = 0
     with_index = 0
     max_p = 0
     best_i = 0
     new_principle = principle
-    for i in range(0, principle):
+    for i in range(cost, range):
         for z in range(0, 364):
             unclaimed += new_principle * (apr_array[z] / 100 / 365)
             with_counter += 1
-            if unclaimed >= i and unclaimed > cost:
+            if unclaimed >= i:
                 new_principle += unclaimed - cost
             #    print(unclaimed)
                 unclaimed = 0
@@ -130,13 +131,14 @@ def calculate(with_array, apr_array, principle, cost):
         unclaimed = 0
         with_counter = 0
         with_index = 0
+    print(max_p)
     return best_i
 
-def determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners):
+def determine(with_freq, freq_var, apr, apr_var, principle, cost, repetitions, winners, range):
     for i in range(0, repetitions):
         with_array = get_with_array(with_freq, freq_var)
         apr_array = get_apr_array(apr, apr_var)
-        winner = calculate(with_array, apr_array, principle, cost)
+        winner = calculate(with_array, apr_array, principle, cost, range)
         try:
             winners[winner] = winners[winner] + 1
         except:

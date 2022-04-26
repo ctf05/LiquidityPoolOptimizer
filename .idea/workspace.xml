@@ -87,7 +87,7 @@
       <workItem from="1650424783441" duration="292000" />
       <workItem from="1650425087423" duration="832000" />
       <workItem from="1650425939665" duration="22876000" />
-      <workItem from="1650825896607" duration="9126000" />
+      <workItem from="1650825896607" duration="15107000" />
     </task>
     <servers />
   </component>
@@ -107,6 +107,13 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Main.py</url>
+          <line>109</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnlyOnFirst="true" notifyOnTerminate="true" ignoreLibraries="true" exception="BaseException">
@@ -126,6 +133,6 @@
     <select />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/LiquidityPoolOptimizer$Main.coverage" NAME="Main Coverage Results" MODIFIED="1650837985462" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/LiquidityPoolOptimizer$Main.coverage" NAME="Main Coverage Results" MODIFIED="1650998566532" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
